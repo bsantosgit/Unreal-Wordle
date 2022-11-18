@@ -3,6 +3,9 @@
 
 #include "GameMode/UnrealWorldGM.h"
 
+#include "Blueprint/UserWidget.h"
+#include "HUD/MainMenuWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utils/UnrealWordleLibrary.h"
 
 void AUnrealWorldGM::BeginPlay()
@@ -17,5 +20,13 @@ void AUnrealWorldGM::BeginPlay()
 
 void AUnrealWorldGM::ShowMainMenu()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Show Main Menu"));
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if(MainMenuWidgetClass == nullptr) return;
+	MainMenuWidgetRef = CreateWidget<UMainMenuWidget>(PC, MainMenuWidgetClass);
+	MainMenuWidgetRef->AddToViewport();
+	FInputModeUIOnly InputModeUI;
+	InputModeUI.SetWidgetToFocus(MainMenuWidgetRef->TakeWidget());
+	InputModeUI.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PC->SetInputMode(InputModeUI);
+	PC->SetShowMouseCursor(true);
 }

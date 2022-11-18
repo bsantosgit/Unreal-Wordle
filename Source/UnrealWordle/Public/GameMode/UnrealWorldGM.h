@@ -7,6 +7,9 @@
 #include "UnrealWordleTypes/StringArrayType.h"
 #include "UnrealWorldGM.generated.h"
 
+class UUserWidget;
+class UMainMenuWidget;
+
 /**
  * 
  */
@@ -16,6 +19,12 @@ class UNREALWORDLE_API AUnrealWorldGM : public AGameModeBase
 	GENERATED_BODY()
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	TSubclassOf<UUserWidget> MainMenuWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
+	UMainMenuWidget* MainMenuWidgetRef;
 
 private:
 	void ShowMainMenu();
