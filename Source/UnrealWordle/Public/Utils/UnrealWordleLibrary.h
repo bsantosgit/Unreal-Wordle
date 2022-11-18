@@ -4,16 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "UnrealWordleTypes/StringArrayType.h"
 #include "UnrealWordleLibrary.generated.h"
-
-USTRUCT(BlueprintType)
-struct FStringArray
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly)
-	TArray<FString> Strings;
-};
 
 /**
  * 
