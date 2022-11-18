@@ -31,6 +31,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="MainMenuWidget", meta=(BindWidget))
 	UButton* UpGuessCountButton;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="MainMenuWidget", meta=(BindWidget))
+	UButton* PlayGameButton;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="MainMenuWidget", meta=(BindWidget))
+	UButton* QuitGameButton;
+
 	virtual void NativeOnInitialized() override;
 
 private:
@@ -45,6 +50,10 @@ private:
 	void DownGuessCountButtonClicked();
 	UFUNCTION()
 	void UpGuessCountButtonClicked();
+	UFUNCTION()
+	void PlayGameButtonClicked();
+	UFUNCTION()
+	void QuitGameButtonClicked();
 
 public:
 	UFUNCTION()

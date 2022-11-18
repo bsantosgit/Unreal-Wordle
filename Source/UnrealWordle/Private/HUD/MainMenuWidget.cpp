@@ -5,14 +5,16 @@
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "GameMode/UnrealWorldGM.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void UMainMenuWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	WordLength = 4;
-	GuessCount = 4;
+	WordLength = 5;
+	GuessCount = 6;
 
 	if(DownWordLengthButton)
 		DownWordLengthButton->OnClicked.AddDynamic(this, &UMainMenuWidget::DownWordLengthButtonClicked);
@@ -22,6 +24,10 @@ void UMainMenuWidget::NativeOnInitialized()
 		DownGuessCountButton->OnClicked.AddDynamic(this, &UMainMenuWidget::DownGuessCountButtonClicked);
 	if(UpGuessCountButton)
 		UpGuessCountButton->OnClicked.AddDynamic(this, &UMainMenuWidget::UpGuessCountButtonClicked);
+	if(PlayGameButton)
+		PlayGameButton->OnClicked.AddDynamic(this, &UMainMenuWidget::PlayGameButtonClicked);
+	if(QuitGameButton)
+		QuitGameButton->OnClicked.AddDynamic(this, &UMainMenuWidget::QuitGameButtonClicked);
 
 	if(WordLengthText)
 	{
@@ -65,6 +71,20 @@ void UMainMenuWidget::UpGuessCountButtonClicked()
 	{
 		GuessCount++;
 	}
+}
+
+void UMainMenuWidget::PlayGameButtonClicked()
+{
+	AUnrealWorldGM* GM = Cast<AUnrealWorldGM>(UGameplayStatics::GetGameMode(this));
+	if(GM)
+	{
+		GM->StartRound(WordLength, GuessCount);
+	}
+}
+
+void UMainMenuWidget::QuitGameButtonClicked()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Quit Game"));
 }
 
 FText UMainMenuWidget::SetWordLengthText() const
