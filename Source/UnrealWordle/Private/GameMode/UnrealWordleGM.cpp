@@ -44,6 +44,7 @@ void AUnrealWordleGM::ShowMainMenu()
 
 void AUnrealWordleGM::OnLetterTyped(FString Letter)
 {
+	if(BoardRef == nullptr) return;
 	if(CurrentLetterIndex < BoardRef->GetWordLength())
 	{
 		AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, CurrentLetterIndex);
@@ -105,7 +106,7 @@ void AUnrealWordleGM::StartRound(int32 WordLength, int32 GuessCount)
 		if(IsValid(BoardRef))
 		{
 			BoardRef->DestroyBoardAndTiles();
-			BoardRef = nullptr;
+			// BoardRef = nullptr;
 		}
 	}
 
