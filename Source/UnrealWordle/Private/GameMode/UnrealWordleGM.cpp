@@ -78,7 +78,23 @@ void AUnrealWordleGM::SubmitWord()
 	}else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Orange, FString("INVALID"));
+		if(BoardRef == nullptr) return;
+		for(int32 Index = 0; Index <= BoardRef->GetWordLastValidIndex(); Index++)
+		{
+			AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, Index);
+			Tile->IncorrectLetterError();
+		}
+		FTimerHandle T_TileInvalid;
+		GetWorldTimerManager().SetTimer(T_TileInvalid, this, &AUnrealWordleGM::ResetInputModeToGame, 0.75f, false);
+		// GetWorldTimerManager().ClearTimer(T_TileInvalid);
 	}
+}
+
+void AUnrealWordleGM::ResetInputModeToGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Reseting Input to Game"));
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PC->SetInputMode(FInputModeGameOnly());
 }
 
 bool AUnrealWordleGM::GetCurrentWord(FString& CurrentWord)

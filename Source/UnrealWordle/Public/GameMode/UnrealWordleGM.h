@@ -56,6 +56,7 @@ public:
 	void OnLetterTyped(FString Letter);
 	void OnBackspaceTyped();
 	void SubmitWord();
+	void ResetInputModeToGame();
 	bool GetCurrentWord(FString& CurrentWord);
 
 	void EditCurrentLetterIndex(int32 Amount);

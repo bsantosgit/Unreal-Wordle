@@ -24,14 +24,17 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, Category="Misc")
 	USceneComponent* SceneRoot;
-	UPROPERTY(VisibleAnywhere, Category="UWTile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UWTile", meta=(AllowPrivateAccess=True))
 	UStaticMeshComponent* TileMesh;
 	UPROPERTY(VisibleAnywhere, Category="UWTile")
 	UWidgetComponent* WidgetFront;
 	UPROPERTY(VisibleAnywhere, Category="UWTile")
 	UWidgetComponent* WidgetBack;
 	
-public:	
+public:
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="UWTile")
+	void IncorrectLetterError();
+	
 	void ClearLetter();
 	void SetLetter(FString Letter);
 	FString GetLetter() const;
