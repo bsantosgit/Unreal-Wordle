@@ -4,6 +4,7 @@
 #include "UWTile.h"
 
 #include "Components/WidgetComponent.h"
+#include "HUD/LetterWidget.h"
 
 AUWTile::AUWTile()
 {
@@ -14,6 +15,7 @@ AUWTile::AUWTile()
 
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TileMesh"));
 	TileMesh->SetupAttachment(RootComponent);
+	TileMesh->CastShadow = false;
 
 	WidgetFront = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetFront"));
 	WidgetFront->SetupAttachment(TileMesh);
@@ -37,7 +39,21 @@ void AUWTile::BeginPlay()
 
 void AUWTile::ClearLetter()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Tile Cleared - %s"), *GetName());
+	SetLetter(TEXT(""));
+}
+
+void AUWTile::SetLetter(FString Letter)
+{
+	ULetterWidget* FrontLetterWidget = Cast<ULetterWidget>(WidgetFront->GetUserWidgetObject());
+	if(FrontLetterWidget)
+	{
+		FrontLetterWidget->SetLetter(FText::FromString(Letter));
+	}
+	ULetterWidget* BackLetterWidget = Cast<ULetterWidget>(WidgetBack->GetUserWidgetObject());
+	if(BackLetterWidget)
+	{
+		BackLetterWidget->SetLetter(FText::FromString(Letter));
+	}
 }
 
 

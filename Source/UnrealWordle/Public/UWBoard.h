@@ -50,7 +50,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="WordleBoard")
 	void DestroyBoardAndTiles();
 
+	AUWTile* GetTile(int32 GuessIndex, int32 LetterIndex) const;
+
 	FORCEINLINE int32 GetWordLength() const { return WordLength; }
+	FORCEINLINE int32 GetWordLastValidIndex() const { return (WordLength - 1); }
 	FORCEINLINE int32 GetGuessCount() const { return GuessCount; }
 	FORCEINLINE void SetWordLength(int32 WL) { WordLength = WL; }
 	FORCEINLINE void SetGuessCount(int32 GC) { GuessCount = GC; }

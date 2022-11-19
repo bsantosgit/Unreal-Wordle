@@ -67,4 +67,9 @@ void AUWBoard::DestroyBoardAndTiles()
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString("Destory Board and Tiles Called"));
 }
 
+AUWTile* AUWBoard::GetTile(int32 GuessIndex, int32 LetterIndex) const
+{
+	return Tiles[(WordLength * GuessIndex) + LetterIndex];
+}
+
 

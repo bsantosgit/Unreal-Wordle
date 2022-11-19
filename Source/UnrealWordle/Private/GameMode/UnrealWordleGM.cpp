@@ -4,6 +4,7 @@
 #include "GameMode/UnrealWordleGM.h"
 
 #include "UWBoard.h"
+#include "UWTile.h"
 #include "Blueprint/UserWidget.h"
 #include "HUD/MainMenuWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -39,6 +40,21 @@ void AUnrealWordleGM::ShowMainMenu()
 	InputModeUI.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	PC->SetInputMode(InputModeUI);
 	PC->SetShowMouseCursor(true);
+}
+
+void AUnrealWordleGM::OnLetterTyped(FString Letter)
+{
+	if(CurrentLetterIndex < BoardRef->GetWordLength())
+	{
+		AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, CurrentLetterIndex);
+		Tile->SetLetter(Letter);
+		EditCurrentLetterIndex(1);
+	}
+}
+
+void AUnrealWordleGM::EditCurrentLetterIndex(int32 Amount)
+{
+	CurrentLetterIndex = FMath::Clamp(CurrentLetterIndex + Amount, 0, BoardRef->GetWordLength());
 }
 
 void AUnrealWordleGM::StartRound(int32 WordLength, int32 GuessCount)

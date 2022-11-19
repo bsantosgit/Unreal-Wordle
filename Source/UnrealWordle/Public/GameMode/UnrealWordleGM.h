@@ -52,5 +52,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="UnrealGameMode")
 	TMap<int32, FStringArray> Words;
 
+	UFUNCTION(Category="UnrealGameMode")
+	void OnLetterTyped(FString Letter);
+
+	void EditCurrentLetterIndex(int32 Amount);
+
 	void StartRound(int32 WordLength, int32 GuessCount);
 };

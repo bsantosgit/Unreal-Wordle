@@ -48,6 +48,14 @@ bool UUnrealWordleLibrary::LoadWordsFromFile(FString FileName, int32 RequiredWor
 	return true;
 }
 
+bool UUnrealWordleLibrary::IsLetter(FString String)
+{
+	if(String.Len() != 1)
+		return false;
+
+	return IsASCIILetter(String.ToUpper().GetCharArray()[0]);
+}
+
 bool UUnrealWordleLibrary::IsASCIILetter(char c)
 {
 	return (c >= 65 && c <= 90);

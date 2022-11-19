@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="UnrealWordleLibrary")
 	static bool LoadWordsFromFile(FString FileName, int32 RequiredWordLength, TMap<int32, FStringArray>& Words);
 
+	UFUNCTION(BlueprintCallable, Category="UnrealWordleLibrary")
+	static bool IsLetter(FString String);
+
 private:
 	static bool IsASCIILetter(char c);
 };
