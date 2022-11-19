@@ -34,4 +34,5 @@ private:
 public:	
 	void ClearLetter();
 	void SetLetter(FString Letter);
+	FString GetLetter() const;
 };

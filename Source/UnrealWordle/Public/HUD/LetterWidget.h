@@ -20,6 +20,7 @@ public:
 	UTextBlock* LetterText;
 
 	void SetLetter(FText Letter);
+	FText GetLetter() const;
 	
 protected:
 	virtual void NativeOnInitialized() override;

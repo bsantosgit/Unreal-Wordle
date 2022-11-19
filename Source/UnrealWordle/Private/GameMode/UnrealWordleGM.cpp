@@ -53,6 +53,61 @@ void AUnrealWordleGM::OnLetterTyped(FString Letter)
 	}
 }
 
+void AUnrealWordleGM::OnBackspaceTyped()
+{
+	if(BoardRef == nullptr) return;
+	EditCurrentLetterIndex(-1);
+	AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, CurrentLetterIndex);
+	if(Tile)
+	{
+		Tile->ClearLetter();
+	}
+	
+}
+
+void AUnrealWordleGM::SubmitWord()
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	FInputModeUIOnly InputModeUI;
+	InputModeUI.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PC->SetInputMode(InputModeUI);
+	FString CurrentWord("");
+	if(GetCurrentWord(CurrentWord))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Red, FString("VALID"));
+	}else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Orange, FString("INVALID"));
+	}
+}
+
+bool AUnrealWordleGM::GetCurrentWord(FString& CurrentWord)
+{
+	if(BoardRef == nullptr)
+	{
+		CurrentWord = FString("");
+		return false;
+	}
+	FString SubmittedWord("");
+	for(int32 Index = 0; Index <= BoardRef->GetWordLastValidIndex(); Index++)
+	{
+		const AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, Index);
+		if(!UUnrealWordleLibrary::IsLetter(Tile->GetLetter()))
+		{
+			CurrentWord = FString("");
+			return false;
+		}else
+		{
+			SubmittedWord = SubmittedWord.Append(Tile->GetLetter());
+		}
+	}
+
+	// We Can Perform Binary Search as Strings array will be Alphabetically Sorted
+	// Algo::BinarySearch()
+	CurrentWord = SubmittedWord;
+	return Words.Find(BoardRef->GetWordLength())->Strings.Contains(SubmittedWord);
+}
+
 void AUnrealWordleGM::EditCurrentLetterIndex(int32 Amount)
 {
 	CurrentLetterIndex = FMath::Clamp(CurrentLetterIndex + Amount, 0, BoardRef->GetWordLength());

@@ -54,6 +54,9 @@ public:
 
 	UFUNCTION(Category="UnrealGameMode")
 	void OnLetterTyped(FString Letter);
+	void OnBackspaceTyped();
+	void SubmitWord();
+	bool GetCurrentWord(FString& CurrentWord);
 
 	void EditCurrentLetterIndex(int32 Amount);
 

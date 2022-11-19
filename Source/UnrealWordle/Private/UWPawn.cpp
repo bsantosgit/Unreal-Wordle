@@ -32,6 +32,8 @@ void AUWPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("IA_AnyKey", IE_Pressed, this, &AUWPawn::AnyKeyPressed);
+	PlayerInputComponent->BindAction("IA_Backspace", IE_Pressed, this, &AUWPawn::BackspaceKeyPressed);
+	PlayerInputComponent->BindAction("IA_Enter", IE_Pressed, this, &AUWPawn::EnterKeyPressed);
 
 }
 
@@ -49,6 +51,22 @@ void AUWPawn::AnyKeyPressed(FKey Key)
 		{
 			UnrealWordleGMRef->OnLetterTyped(Key.GetDisplayName().ToString());
 		}
+	}
+}
+
+void AUWPawn::BackspaceKeyPressed(FKey Key)
+{
+	if(UnrealWordleGMRef)
+	{
+		UnrealWordleGMRef->OnBackspaceTyped();
+	}
+}
+
+void AUWPawn::EnterKeyPressed(FKey Key)
+{
+	if(UnrealWordleGMRef)
+	{
+		UnrealWordleGMRef->SubmitWord();
 	}
 }
 

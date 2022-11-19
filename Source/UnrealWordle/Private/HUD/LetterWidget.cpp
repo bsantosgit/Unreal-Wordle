@@ -13,6 +13,11 @@ void ULetterWidget::SetLetter(FText Letter)
 	}
 }
 
+FText ULetterWidget::GetLetter() const
+{
+	return LetterText->GetText();
+}
+
 void ULetterWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

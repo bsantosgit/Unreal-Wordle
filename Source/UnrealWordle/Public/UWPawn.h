@@ -29,6 +29,8 @@ private:
 	UCameraComponent* ViewCamera;
 
 	void AnyKeyPressed(FKey Key);
+	void BackspaceKeyPressed(FKey Key);
+	void EnterKeyPressed(FKey Key);
 
 	AUnrealWordleGM* UnrealWordleGMRef;
 	

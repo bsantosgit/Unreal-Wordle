@@ -56,4 +56,14 @@ void AUWTile::SetLetter(FString Letter)
 	}
 }
 
+FString AUWTile::GetLetter() const
+{
+	ULetterWidget* FrontLetterWidget = Cast<ULetterWidget>(WidgetFront->GetUserWidgetObject());
+	if(FrontLetterWidget)
+	{
+		return FrontLetterWidget->GetLetter().ToString();
+	}
+	return FString("");
+}
+
 
