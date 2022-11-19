@@ -70,8 +70,18 @@ void AUnrealWordleGM::StartRound(int32 WordLength, int32 GuessCount)
 		FActorSpawnParameters BoardSpawnParams;
 		BoardSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		BoardRef = GetWorld()->SpawnActor<AUWBoard>(BoardClass, BoardSpawnTransform, BoardSpawnParams);
+		// This by default calls the Construction Script and Hence Setting any values Post Construction misses the Construction and Begin Play
+		// So We Deferred the Actor Spawn, call to Constructor
+		// BoardRef = GetWorld()->SpawnActor<AUWBoard>(BoardClass, BoardSpawnTransform, BoardSpawnParams);
+		BoardRef = Cast<AUWBoard>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, BoardClass, BoardSpawnTransform));
 
+		if(IsValid(BoardRef))
+		{
+			BoardRef->SetWordLength(WordLength);
+			BoardRef->SetGuessCount(GuessCount);
+			UGameplayStatics::FinishSpawningActor(BoardRef, BoardSpawnTransform);
+		}
+		
 		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		PC->SetInputMode(FInputModeGameOnly());
 		PC->SetShowMouseCursor(false);
