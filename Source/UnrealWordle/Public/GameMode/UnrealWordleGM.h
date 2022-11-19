@@ -5,20 +5,21 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "UnrealWordleTypes/StringArrayType.h"
-#include "UnrealWorldGM.generated.h"
+#include "UnrealWordleGM.generated.h"
 
 class UUserWidget;
 class UMainMenuWidget;
+class AUWBoard;
 
 /**
  * 
  */
 UCLASS()
-class UNREALWORDLE_API AUnrealWorldGM : public AGameModeBase
+class UNREALWORDLE_API AUnrealWordleGM : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
-	AUnrealWorldGM();
+	AUnrealWordleGM();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -26,14 +27,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
 	TSubclassOf<UUserWidget> MainMenuWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	TSubclassOf<AUWBoard> BoardClass;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
 	UMainMenuWidget* MainMenuWidgetRef;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
+	AUWBoard* BoardRef;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
 	FString GoalWord;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	FString WordsFileName;
+
 private:
 	void ShowMainMenu();
+
+	int32 CurrentGuessIndex;
+	int32 CurrentLetterIndex;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="UnrealGameMode")

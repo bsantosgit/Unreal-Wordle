@@ -5,7 +5,7 @@
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "GameMode/UnrealWorldGM.h"
+#include "GameMode/UnrealWordleGM.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -75,7 +75,7 @@ void UMainMenuWidget::UpGuessCountButtonClicked()
 
 void UMainMenuWidget::PlayGameButtonClicked()
 {
-	AUnrealWorldGM* GM = Cast<AUnrealWorldGM>(UGameplayStatics::GetGameMode(this));
+	AUnrealWordleGM* GM = Cast<AUnrealWordleGM>(UGameplayStatics::GetGameMode(this));
 	if(GM)
 	{
 		GM->StartRound(WordLength, GuessCount);
