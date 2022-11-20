@@ -75,6 +75,7 @@ void AUnrealWordleGM::SubmitWord()
 	if(GetCurrentWord(CurrentWord))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Red, FString("VALID"));
+		HandleValidWordSubmitted();
 	}else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Orange, FString("INVALID"));
@@ -84,9 +85,9 @@ void AUnrealWordleGM::SubmitWord()
 			AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, Index);
 			Tile->IncorrectLetterError();
 		}
-		FTimerHandle T_TileInvalid;
-		GetWorldTimerManager().SetTimer(T_TileInvalid, this, &AUnrealWordleGM::ResetInputModeToGame, 0.75f, false);
-		// GetWorldTimerManager().ClearTimer(T_TileInvalid);
+		FTimerHandle TH_TileInvalid;
+		GetWorldTimerManager().SetTimer(TH_TileInvalid, this, &AUnrealWordleGM::ResetInputModeToGame, 0.75f, false);
+		// GetWorldTimerManager().ClearTimer(TH_TileInvalid);
 	}
 }
 
@@ -122,6 +123,56 @@ bool AUnrealWordleGM::GetCurrentWord(FString& CurrentWord)
 	// Algo::BinarySearch()
 	CurrentWord = SubmittedWord;
 	return Words.Find(BoardRef->GetWordLength())->Strings.Contains(SubmittedWord);
+}
+
+void AUnrealWordleGM::HandleValidWordSubmitted()
+{
+	int32 SubmitWordIndex = 0;
+	HandleNextTile(SubmitWordIndex);
+}
+
+void AUnrealWordleGM::HandleNextTile(int32 SubmitWordIndex)
+{
+	if(BoardRef == nullptr) return;
+	AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, SubmitWordIndex);
+	SubmitTile(Tile, SubmitWordIndex);
+	if(SubmitWordIndex < BoardRef->GetWordLastValidIndex())
+	{
+		FTimerDelegate NextTileDelegate;
+		SubmitWordIndex++;
+		NextTileDelegate.BindUFunction(this, FName("HandleNextTile"), SubmitWordIndex);
+		GetWorldTimerManager().SetTimer(TH_NextTile, NextTileDelegate, 0.4f, false);
+	}else
+	{
+		ResetInputModeToGame();
+		CurrentGuessIndex++;
+		CurrentLetterIndex = 0;
+		GetWorldTimerManager().ClearTimer(TH_NextTile);
+	}
+}
+
+void AUnrealWordleGM::SubmitTile(AUWTile* CurrentTile, int32 CurrentIndex)
+{
+	// TODO : Fix Bug - Duplicate Letter Second Index Not Registered
+	FString CurrentTileLetter = CurrentTile->GetLetter();
+	const int32 LetterFoundIndex = GoalWord.Find(CurrentTileLetter);
+	if(LetterFoundIndex > -1)
+	{
+		// True if Letter is anywhere Inside the Word
+		// if(LetterFoundIndex == CurrentIndex) // This Line Causes Bug for words having duplicate Letters
+		if(GoalWord[CurrentIndex] == CurrentTileLetter[0])
+		{
+			// If In exact right Position
+			CurrentTile->SubmitLetter(LetterPerfect);
+		}else
+		{
+			CurrentTile->SubmitLetter(LetterCorrect);
+		}
+	}else
+	{
+		// Letter not in word
+		CurrentTile->SubmitLetter(LetterInCorrect);
+	}
 }
 
 void AUnrealWordleGM::EditCurrentLetterIndex(int32 Amount)

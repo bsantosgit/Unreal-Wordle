@@ -34,6 +34,9 @@ private:
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="UWTile")
 	void IncorrectLetterError();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="UWTile")
+	void SubmitLetter(UMaterialInterface* Material);
 	
 	void ClearLetter();
 	void SetLetter(FString Letter);

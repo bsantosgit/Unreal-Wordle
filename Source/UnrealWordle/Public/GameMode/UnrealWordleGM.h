@@ -10,6 +10,7 @@
 class UUserWidget;
 class UMainMenuWidget;
 class AUWBoard;
+class AUWTile;
 
 /**
  * 
@@ -42,11 +43,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
 	FString WordsFileName;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	UMaterialInterface* LetterInCorrect;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	UMaterialInterface* LetterCorrect;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	UMaterialInterface* LetterPerfect;
+
 private:
 	void ShowMainMenu();
 
 	int32 CurrentGuessIndex;
 	int32 CurrentLetterIndex;
+	FTimerHandle TH_NextTile;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="UnrealGameMode")
@@ -58,6 +67,10 @@ public:
 	void SubmitWord();
 	void ResetInputModeToGame();
 	bool GetCurrentWord(FString& CurrentWord);
+	void HandleValidWordSubmitted();
+	UFUNCTION()
+	void HandleNextTile(int32 SubmitWordIndex);
+	void SubmitTile(AUWTile* CurrentTile, int32 CurrentIndex);
 
 	void EditCurrentLetterIndex(int32 Amount);
 
