@@ -85,6 +85,7 @@ void UMainMenuWidget::PlayGameButtonClicked()
 void UMainMenuWidget::QuitGameButtonClicked()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Quit Game"));
+	GetOwningPlayer()->ConsoleCommand(FString("quit"));
 }
 
 FText UMainMenuWidget::SetWordLengthText() const

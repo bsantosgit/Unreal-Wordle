@@ -226,9 +226,9 @@ void AUnrealWordleGM::StartRound(int32 WordLength, int32 GuessCount)
 	{
 		const int32 RandomWordIndex = FMath::RandRange(0, WordFound->Strings.Num());
 		// Disabled For Testing
-		// GoalWord = WordFound->Strings[RandomWordIndex];
+		GoalWord = WordFound->Strings[RandomWordIndex];
 		// For Testing
-		GoalWord = "APPLE";
+		// GoalWord = "APPLE";
 
 		CurrentGuessIndex = 0;
 		CurrentLetterIndex = 0;

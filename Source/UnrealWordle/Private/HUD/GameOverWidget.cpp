@@ -36,13 +36,15 @@ void UGameOverWidget::NativeConstruct()
 void UGameOverWidget::MainMenuButtonClicked()
 {
 	RemoveFromParent();
-	if(GameModeRef)
-	{
-		GameModeRef->ShowMainMenu();
-	}
+	// if(GameModeRef)
+	// {
+	// 	GameModeRef->ShowMainMenu();
+	// }
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()),false);
 }
 
 void UGameOverWidget::QuitGameButtonClicked()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Quit Game from Game Over Menu"));
+	GetOwningPlayer()->ConsoleCommand(FString("quit"));
 }
