@@ -9,6 +9,7 @@
 
 class UUserWidget;
 class UMainMenuWidget;
+class UGameOverWidget;
 class AUWBoard;
 class AUWTile;
 
@@ -27,15 +28,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
 	TSubclassOf<UUserWidget> MainMenuWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
-	TSubclassOf<AUWBoard> BoardClass;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
 	UMainMenuWidget* MainMenuWidgetRef;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	TSubclassOf<AUWBoard> BoardClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
 	AUWBoard* BoardRef;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UnrealGameMode")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
+	UGameOverWidget* GameOverWidgetRef;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UnrealGameMode")
 	FString GoalWord;
@@ -51,7 +55,8 @@ protected:
 	UMaterialInterface* LetterPerfect;
 
 private:
-	void ShowMainMenu();
+	bool CheckForGameOver();
+	void EndGame();
 
 	int32 CurrentGuessIndex;
 	int32 CurrentLetterIndex;
@@ -61,6 +66,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="UnrealGameMode")
 	TMap<int32, FStringArray> Words;
 
+	void ShowMainMenu();
 	UFUNCTION(Category="UnrealGameMode")
 	void OnLetterTyped(FString Letter);
 	void OnBackspaceTyped();
@@ -75,4 +81,6 @@ public:
 	void EditCurrentLetterIndex(int32 Amount);
 
 	void StartRound(int32 WordLength, int32 GuessCount);
+
+	FORCEINLINE FString GetGoalWord() const { return GoalWord; }
 };

@@ -6,6 +6,7 @@
 #include "UWBoard.h"
 #include "UWTile.h"
 #include "Blueprint/UserWidget.h"
+#include "HUD/GameOverWidget.h"
 #include "HUD/MainMenuWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Utils/UnrealWordleLibrary.h"
@@ -40,6 +41,37 @@ void AUnrealWordleGM::ShowMainMenu()
 	InputModeUI.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	PC->SetInputMode(InputModeUI);
 	PC->SetShowMouseCursor(true);
+}
+
+bool AUnrealWordleGM::CheckForGameOver()
+{
+	if(BoardRef == nullptr) return true;
+	FString CurrentWord("");
+	const bool IsCurrentWordValid = GetCurrentWord(CurrentWord);
+
+	if(IsCurrentWordValid && GoalWord == CurrentWord)
+		return true;
+
+	if(CurrentGuessIndex >= BoardRef->GetGuessCount()-1)
+		return true;
+
+	return false;
+}
+
+void AUnrealWordleGM::EndGame()
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if(GameOverWidgetClass == nullptr) return;
+	GameOverWidgetRef = CreateWidget<UGameOverWidget>(PC, GameOverWidgetClass);
+	GameOverWidgetRef->bIsFocusable = true;
+	
+	FInputModeUIOnly InputModeUI;
+	InputModeUI.SetWidgetToFocus(GameOverWidgetRef->TakeWidget());
+	InputModeUI.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PC->SetInputMode(InputModeUI);
+	PC->SetShowMouseCursor(true);
+
+	GameOverWidgetRef->AddToViewport();
 }
 
 void AUnrealWordleGM::OnLetterTyped(FString Letter)
@@ -144,10 +176,17 @@ void AUnrealWordleGM::HandleNextTile(int32 SubmitWordIndex)
 		GetWorldTimerManager().SetTimer(TH_NextTile, NextTileDelegate, 0.4f, false);
 	}else
 	{
-		ResetInputModeToGame();
-		CurrentGuessIndex++;
-		CurrentLetterIndex = 0;
 		GetWorldTimerManager().ClearTimer(TH_NextTile);
+		if(CheckForGameOver())
+		{
+			FTimerHandle TH_EndGame;
+			GetWorldTimerManager().SetTimer(TH_EndGame, this, &AUnrealWordleGM::EndGame, 1.0f);
+		}else
+		{
+			ResetInputModeToGame();
+			CurrentGuessIndex++;
+			CurrentLetterIndex = 0;	
+		}
 	}
 }
 
