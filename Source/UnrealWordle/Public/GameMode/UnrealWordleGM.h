@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "UnrealWordleTypes/StringArrayType.h"
+#include "UnrealWordleTypes/TileStateType.h"
 #include "UnrealWordleGM.generated.h"
 
 class UUserWidget;
@@ -22,7 +23,6 @@ class UNREALWORDLE_API AUnrealWordleGM : public AGameModeBase
 	GENERATED_BODY()
 public:
 	AUnrealWordleGM();
-	
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,6 +55,7 @@ protected:
 	UMaterialInterface* LetterPerfect;
 
 private:
+	TArray<ETileState> PreSubmitTile(const FString& GuessWord);
 	bool CheckForGameOver();
 	void EndGame();
 
@@ -73,10 +74,10 @@ public:
 	void SubmitWord();
 	void ResetInputModeToGame();
 	bool GetCurrentWord(FString& CurrentWord);
-	void HandleValidWordSubmitted();
+	void HandleValidWordSubmitted(const TArray<ETileState>& Matches);
 	UFUNCTION()
-	void HandleNextTile(int32 SubmitWordIndex);
-	void SubmitTile(AUWTile* CurrentTile, int32 CurrentIndex);
+	void HandleNextTile(int32 SubmitWordIndex, const TArray<ETileState>& Matches);
+	void SubmitTile(AUWTile* CurrentTile, int32 CurrentIndex, const TArray<ETileState>& Matches);
 
 	void EditCurrentLetterIndex(int32 Amount);
 

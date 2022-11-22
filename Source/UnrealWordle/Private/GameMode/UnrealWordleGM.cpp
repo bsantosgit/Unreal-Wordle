@@ -43,6 +43,79 @@ void AUnrealWordleGM::ShowMainMenu()
 	PC->SetShowMouseCursor(true);
 }
 
+TArray<ETileState> AUnrealWordleGM::PreSubmitTile(const FString& GuessWord)
+{
+	TArray<ETileState> Matches;
+	TMap<FString, int32> ProvidedRemain;
+	TMap<FString, int32> SolutionRemain;
+	TMap<FString, int32> Reassignable;
+	
+	for(int32 i = 0; i < GuessWord.Len(); i++)
+	{
+		Matches.Add(ETileState::TS_Incorrect);
+	}
+
+	for(int32 i = 0; i < GuessWord.Len(); i++)
+	{
+		if(GuessWord[i] == GoalWord[i])
+			Matches[i] = ETileState::TS_Perfect;
+	}
+
+	for(int32 i = 0; i < GuessWord.Len(); i++){
+		if(Matches[i] != ETileState::TS_Perfect){
+			FString SGuessWord(FString::Chr(GuessWord[i]));
+			if(ProvidedRemain.Find(SGuessWord))
+			{
+				int32 Val = ProvidedRemain[SGuessWord] + 1;
+				ProvidedRemain.Emplace(SGuessWord, Val);	
+			}else
+			{
+				ProvidedRemain.Emplace(SGuessWord, 1);
+			}
+			
+			FString SGoalWord(FString::Chr(GoalWord[i]));
+			if(SolutionRemain.Find(SGoalWord))
+			{
+				int32 Val = SolutionRemain[SGoalWord] + 1;
+				SolutionRemain.Emplace(SGoalWord, Val);	
+			}else
+			{
+				SolutionRemain.Emplace(SGoalWord, 1);
+			}
+		}
+	}
+
+	for(auto PItem : ProvidedRemain)
+	{
+		int X = 0;
+		if(SolutionRemain.Find(PItem.Key))
+		{
+			X = SolutionRemain[PItem.Key];
+		}else
+		{
+			X = 0;
+		}
+
+		Reassignable.Emplace(PItem.Key,FMath::Min(PItem.Value, X));
+	}
+
+	for(int32 i = 0; i < GuessWord.Len(); i++)
+	{
+		FString SGuessWord(FString::Chr(GuessWord[i]));
+		if(Reassignable.Find(SGuessWord))
+		{
+			if(Matches[i] != ETileState::TS_Perfect && Reassignable[SGuessWord] != 0)
+			{
+				Matches[i] = ETileState::TS_Correct;
+				auto Val = Reassignable[SGuessWord] - 1;
+				Reassignable.Emplace(SGuessWord, Val);
+			}
+		}
+	}
+
+	return Matches;
+}
+
 bool AUnrealWordleGM::CheckForGameOver()
 {
 	if(BoardRef == nullptr) return true;
@@ -107,7 +180,8 @@ void AUnrealWordleGM::SubmitWord()
 	if(GetCurrentWord(CurrentWord))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Red, FString("VALID"));
-		HandleValidWordSubmitted();
+		const TArray<ETileState> Matches = PreSubmitTile(CurrentWord);
+		HandleValidWordSubmitted(Matches);
 	}else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Orange, FString("INVALID"));
@@ -157,22 +231,22 @@ bool AUnrealWordleGM::GetCurrentWord(FString& CurrentWord)
 	return Words.Find(BoardRef->GetWordLength())->Strings.Contains(SubmittedWord);
 }
 
-void AUnrealWordleGM::HandleValidWordSubmitted()
+void AUnrealWordleGM::HandleValidWordSubmitted(const TArray<ETileState>& Matches)
 {
-	int32 SubmitWordIndex = 0;
-	HandleNextTile(SubmitWordIndex);
+	constexpr int32 SubmitWordIndex = 0;
+	HandleNextTile(SubmitWordIndex, Matches);
 }
 
-void AUnrealWordleGM::HandleNextTile(int32 SubmitWordIndex)
+void AUnrealWordleGM::HandleNextTile(int32 SubmitWordIndex, const TArray<ETileState>& Matches)
 {
 	if(BoardRef == nullptr) return;
 	AUWTile* Tile = BoardRef->GetTile(CurrentGuessIndex, SubmitWordIndex);
-	SubmitTile(Tile, SubmitWordIndex);
+	SubmitTile(Tile, SubmitWordIndex, Matches);
 	if(SubmitWordIndex < BoardRef->GetWordLastValidIndex())
 	{
 		FTimerDelegate NextTileDelegate;
 		SubmitWordIndex++;
-		NextTileDelegate.BindUFunction(this, FName("HandleNextTile"), SubmitWordIndex);
+		NextTileDelegate.BindUFunction(this, FName("HandleNextTile"), SubmitWordIndex, Matches);
 		GetWorldTimerManager().SetTimer(TH_NextTile, NextTileDelegate, 0.4f, false);
 	}else
 	{
@@ -190,27 +264,15 @@ void AUnrealWordleGM::HandleNextTile(int32 SubmitWordIndex)
 	}
 }
 
-void AUnrealWordleGM::SubmitTile(AUWTile* CurrentTile, int32 CurrentIndex)
+void AUnrealWordleGM::SubmitTile(AUWTile* CurrentTile, int32 CurrentIndex, const TArray<ETileState>& Matches)
 {
-	// TODO : Fix Bug - Duplicate Letter Second Index Not Registered
-	FString CurrentTileLetter = CurrentTile->GetLetter();
-	const int32 LetterFoundIndex = GoalWord.Find(CurrentTileLetter);
-	if(LetterFoundIndex > -1)
-	{
-		// True if Letter is anywhere Inside the Word
-		// if(LetterFoundIndex == CurrentIndex) // This Line Causes Bug for words having duplicate Letters
-		if(GoalWord[CurrentIndex] == CurrentTileLetter[0])
-		{
-			// If In exact right Position
-			CurrentTile->SubmitLetter(LetterPerfect);
-		}else
-		{
-			CurrentTile->SubmitLetter(LetterCorrect);
-		}
-	}else
-	{
-		// Letter not in word
-		CurrentTile->SubmitLetter(LetterInCorrect);
+	// https://codereview.stackexchange.com/questions/278966/correct-logic-for-string-comparison-in-wordle
+	// Logic Based on Above Link
+	switch (Matches[CurrentIndex]) {
+		case ETileState::TS_Perfect: CurrentTile->SubmitLetter(LetterPerfect); break;
+		case ETileState::TS_Incorrect: CurrentTile->SubmitLetter(LetterInCorrect); break;
+		case ETileState::TS_Correct: CurrentTile->SubmitLetter(LetterCorrect); break;
+		default: checkNoEntry();
 	}
 }
 
