@@ -45,9 +45,16 @@ void AUWBoard::InitializeBoard()
 	{
 		for(int32 _WL = 0; _WL < WordLength; _WL++)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%d - %d"), _GC, _WL);
 			FTransform TileTransform;
-			const float TileYOffset = (_WL - WordLength/2) * (TileSize + PaddingSize);
+			float TileYOffset;
+			if(WordLength % 2 == 0)
+			{
+				TileYOffset = (_WL - (WordLength/2)+0.5) * (TileSize + PaddingSize);
+			}else
+			{
+				TileYOffset = (_WL - WordLength/2) * (TileSize + PaddingSize);
+			}
+			
 			const float TileZOffset = _GC * (TileSize + PaddingSize) * -1.f;
 			TileTransform.SetLocation(BoardTopMiddleLocation->GetComponentLocation() + FVector(0.f, TileYOffset, TileZOffset));
 			TileTransform.SetRotation(FQuat(BoardTopMiddleLocation->GetComponentRotation()));
