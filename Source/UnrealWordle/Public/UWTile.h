@@ -26,9 +26,9 @@ private:
 	USceneComponent* SceneRoot;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UWTile", meta=(AllowPrivateAccess=True))
 	UStaticMeshComponent* TileMesh;
-	UPROPERTY(VisibleAnywhere, Category="UWTile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UWTile", meta=(AllowPrivateAccess=True))
 	UWidgetComponent* WidgetFront;
-	UPROPERTY(VisibleAnywhere, Category="UWTile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UWTile", meta=(AllowPrivateAccess=True))
 	UWidgetComponent* WidgetBack;
 	
 public:
